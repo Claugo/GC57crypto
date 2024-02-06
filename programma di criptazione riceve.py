@@ -1,4 +1,4 @@
-# interfaccia
+# Decodifica Messaggio Criptati
 import tkinter as tk
 from tkinter import *
 from PIL import Image, ImageTk
@@ -59,7 +59,7 @@ def decrypt_message(ciphertext, aes_key, nonce, tag):
 
 
 def decodifica():
-    path = "send_mess_13000b"
+    path = "F:\\DCP/send_mess_13000b"
     if os.path.exists(path):
         with open(path, "rb") as file:
             ciphertext, nonce, tag, semiprime = pickle.load(file)
@@ -184,6 +184,7 @@ b3 = tk.Button(
     font="arial, 12 bold",
     width=17,
     cursor="hand2",
+    state='disabled'
 )
 b3.place(x=px, y=py)
 
@@ -202,11 +203,13 @@ b4.place(x=px, y=py)
 
 py = py + 3
 px = px + 190
-e2 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry)
+e2 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry,justify='center')
+e2.insert(0,'Cartella Cloud su PC')
 e2.place(x=px, y=py)
 
 py = py + -50
-e3 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry)
+e3 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry,justify='center')
+e3.insert(0,'Non Disponibile')
 e3.place(x=px, y=py)
 
 # Carica l'immagine automaticamente quando la finestra si apre

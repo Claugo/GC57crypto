@@ -1,4 +1,4 @@
-# interfaccia
+# Invio Messaggi Criptati
 import tkinter as tk
 from tkinter import *
 from PIL import Image, ImageTk
@@ -95,7 +95,7 @@ def elaborazione_cloud():
     aes_key = generate_aes_key(secret_key)
     message_to_encrypt = message_to_encrypt.strip()
     ciphertext, nonce, tag = encrypt_message(message_to_encrypt, aes_key)
-    with open("send_mess_13000b", "wb") as file:
+    with open("F:\\DCP/send_mess_13000b", "wb") as file:
         pickle.dump((ciphertext, nonce, tag, str(semiprime)), file)
     messagebox.showinfo("Via Cloud:", "Messaggio creato con successo")
 
@@ -209,6 +209,7 @@ b3 = tk.Button(
     width=13,
     cursor="hand2",
     command=elaborazione_email,
+    state='disabled',
 )
 b3.place(x=px, y=py)
 
@@ -227,11 +228,13 @@ b4.place(x=px, y=py)
 
 py = py + 3
 px = px + 150
-e2 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry)
+e2 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry,justify='center')
+e2.insert(0,'Cartella cloud su PC')
 e2.place(x=px, y=py)
 
 py = py + -50
-e3 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry)
+e3 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry,justify='center')
+e3.insert(0,'Non Disponibile')
 e3.place(x=px, y=py)
 
 # Carica l'immagine automaticamente quando la finestra si apre
