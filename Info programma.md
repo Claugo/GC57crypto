@@ -59,6 +59,7 @@ Il processo di fattorizzazione è a tempo zero. Le 10 iterazioni sono solo una s
 La fattorizzazione avviene a tempo zero e con questo viene creata la chiave (Fattore primo di 6000 bit) che darà accesso agli algoritmi di sicurezza riportati sopra
 
 Si procederà poi a scrivere il messaggio e che nell’istante in cui si preme invia… questo verrà codificato e salvato in un file e spedito.
+
 Programma di decodifica 
 
-Il programma di decodifica non necessiterà di caricare il semiprimo, in quanto questo è stato inserito dentro il messaggio. L’unica cosa che dovrà fare è caricare da USB la chiave di fattorizzazione semiprimo e fattorizzare il semiprimo situato all’interno del messaggio estraendo la chiave(fattore primo da 6000 bit) per avviare il ciclo di decodificazione
+Il programma di decodifica non necessiterà di caricare il semiprimo, in quanto questo è stato inserito dentro il messaggio. L’unica cosa che dovrà fare è caricare da USB la chiave e fattorizzare il semiprimo situato all’interno del messaggio estraendo la chiave(fattore primo da 6000 bit) per avviare il ciclo di decodificazione
