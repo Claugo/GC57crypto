@@ -56,7 +56,7 @@ def factorize(semiprime):
 
 Il processo di fattorizzazione è a tempo zero. Le 10 iterazioni sono solo una sicurezza che si trova anche all’interno del programma di creazione dei semiprimi. Sono le iterazione massime che può fare per risolvere la fattorizzazione, se no, il campo viene abbassato
 
-La fattorizzazione avviene a tempo zero e con questo viene creata la chiave (Fattore primo di 6000 bit) che utilizzerà gli algoritmi di sicurezza riportati sopra
+La fattorizzazione avviene a tempo zero e con questo viene creata la chiave (Fattore primo di 6000 bit) che darà accesso agli algoritmi di sicurezza riportati sopra
 
 Si procederà poi a scrivere il messaggio e che nell’istante in cui si preme invia… questo verrà codificato e salvato in un file e spedito.
 Programma di decodifica 
