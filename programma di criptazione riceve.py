@@ -10,25 +10,72 @@ from Crypto.Hash import SHA256
 from math import gcd
 from random import randint
 import pickle
-
-# Modes: system (default), light, dark
+from tkinter import filedialog
 
 apri_dati = simpledialog.askstring("USB", "Inserisci la porta USB se diversa da D")
 if not apri_dati:
     apri_dati = "d"
 
 
-file_path = os.path.join(apri_dati + ":", "chiave")
+# file_path = os.path.join(apri_dati)
 
-try:
-    with open(file_path, "r") as leggif:
-        leggi1 = int(leggif.readline())
-        leggi2 = int(leggif.readline())
-        leggi3 = int(leggif.readline())
-        chiave=leggi1**leggi2
-except FileNotFoundError:
-    messagebox.showerror("Errore", "Dati su USB non trovati")
+
+usb_path = apri_dati + ":\\"
+if os.path.exists(usb_path):
+    try:
+        storage_devices = os.listdir(usb_path)
+    except FileNotFoundError:
+        pass
+else:
+    messagebox.showwarning(
+        "Attenzione", "Chiavetta USB non trovata nella lettera di unità " + apri_dati
+    )
     quit()
+
+
+def apri_file():
+    global codice_selezionato, chiave, filename
+    filename = filedialog.askopenfilename(
+        title="Apri file",
+        initialdir="F:\\DCP",  # Cartella iniziale predefinita
+        # filetypes=(("Tutti i File", "*.*"),("File di testo", "*.txt")),
+    )
+    semipsel = filename.split("/")
+    files=semipsel[2].split('_')
+    codice_selezionato = files[2]
+    chiave_usb = apri_dati + ":\\chiave_" + codice_selezionato
+
+    if os.path.exists(chiave_usb):
+        with open(chiave_usb, "r") as leggif:
+            leggi1 = int(leggif.readline())
+            leggi2 = int(leggif.readline())
+            leggi3 = int(leggif.readline())
+            chiave = leggi1**leggi2
+            prewin.destroy()  # Chiude la finestra tkinter dopo aver selezionato il file
+
+    else:
+        messagebox.showerror("Errore", "Dati su USB non trovati")
+        prewin.destroy()  # Chiude la finestra tkinter dopo aver selezionato il file
+        quit()
+
+
+prewin = tk.Tk()
+larghezza = prewin.winfo_screenwidth()
+altezza = prewin.winfo_screenheight()
+prewin.title("Seleziona il File Da Decriptare")
+prewin.configure(bg="orange")
+prewin.geometry(f"{'300'}x{'100'}+{larghezza//2}+{altezza//3}")
+
+label = tk.Label(
+    prewin, text="Seleziona BIT di Codifica", bg="orange", font="arial 12 bold"
+)
+label.pack(pady=10)
+
+select_button = tk.Button(prewin, width=10, text="APRI", bg="green", command=apri_file)
+select_button.pack(pady=5)
+
+prewin.mainloop()
+
 
 
 def factorize(semiprime, chiave):
@@ -47,8 +94,6 @@ def generate_aes_key(prime_factor):
     hash_object = SHA256.new(data=str(prime_factor).encode())
     return hash_object.digest()
 
-
-
     # Stampa i dati letti
 
 
@@ -59,18 +104,16 @@ def decrypt_message(ciphertext, aes_key, nonce, tag):
 
 
 def decodifica():
-    path = "F:\\DCP/send_mess_13000b"
-    if os.path.exists(path):
-        with open(path, "rb") as file:
-            ciphertext, nonce, tag, semiprime = pickle.load(file)
-        semiprime = int(semiprime)
-        secret_key_received = factorize(semiprime, chiave)
-        aes_key_received = generate_aes_key(secret_key_received)
-        decrypted_message = decrypt_message(ciphertext, aes_key_received, nonce, tag)
-        tw1.delete('1.0',END)
-        tw1.insert('1.0',decrypted_message)
-    else:
-        messagebox.showerror('Attenzione','File Non Trovato')
+    
+    path = "F:\\DCP/send_mess_"+codice_selezionato
+    with open(path, "rb") as file:
+        ciphertext, nonce, tag, semiprime = pickle.load(file)
+    semiprime = int(semiprime)
+    secret_key_received = factorize(semiprime, chiave)
+    aes_key_received = generate_aes_key(secret_key_received)
+    decrypted_message = decrypt_message(ciphertext, aes_key_received, nonce, tag)
+    tw1.delete("1.0", END)
+    tw1.insert("1.0", decrypted_message)
 
 
 def carica_immagine():
@@ -129,7 +172,7 @@ fondo_entry = "#C1C1C1"
 # *************************************************
 root = tk.Tk()
 root.title("Decodifica Documento Criptato  DDC")
-root.geometry(finestra)
+root.geometry(finestra+'+1000+50')
 root.config(bg=fondo_finestra)
 # Creazione del canvas
 px = finestra_x - 130
@@ -184,7 +227,7 @@ b3 = tk.Button(
     font="arial, 12 bold",
     width=17,
     cursor="hand2",
-    state='disabled'
+    state="disabled",
 )
 b3.place(x=px, y=py)
 
@@ -203,13 +246,13 @@ b4.place(x=px, y=py)
 
 py = py + 3
 px = px + 190
-e2 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry,justify='center')
-e2.insert(0,'Cartella Cloud su PC')
+e2 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry, justify="center")
+e2.insert(0, "Cartella Cloud su PC")
 e2.place(x=px, y=py)
 
 py = py + -50
-e3 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry,justify='center')
-e3.insert(0,'Non Disponibile')
+e3 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry, justify="center")
+e3.insert(0, "Non Disponibile")
 e3.place(x=px, y=py)
 
 # Carica l'immagine automaticamente quando la finestra si apre

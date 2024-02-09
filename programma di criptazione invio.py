@@ -5,30 +5,76 @@ from PIL import Image, ImageTk
 import os
 from tkinter import messagebox
 from tkinter import simpledialog
+from tkinter import filedialog
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from math import gcd
 from random import randint
 import pickle
 
-# Modes: system (default), light, dark
 
 apri_dati = simpledialog.askstring("USB", "Inserisci la porta USB se diversa da D")
 if not apri_dati:
     apri_dati = "d"
 
 
-file_path = os.path.join(apri_dati + ":", "chiave")
+# file_path = os.path.join(apri_dati)
 
-try:
-    with open(file_path, "r") as leggif:
-        leggi1 = int(leggif.readline())
-        leggi2 = int(leggif.readline())
-        leggi3 = int(leggif.readline())
-        chiave=leggi1**leggi2
-except FileNotFoundError:
-    messagebox.showerror("Errore", "Dati su USB non trovati")
+
+usb_path = apri_dati + ":\\"
+if os.path.exists(usb_path):
+    try:
+        storage_devices = os.listdir(usb_path)
+    except FileNotFoundError:
+        pass
+else:
+    messagebox.showwarning(
+        "Attenzione", "Chiavetta USB non trovata nella lettera di unità " + apri_dati
+    )
     quit()
+
+
+def apri_file():
+    global codice_selezionato,chiave,filename
+    filename = filedialog.askopenfilename(
+        title="Apri file",
+        initialdir="c:\\semiprimi",  # Cartella iniziale predefinita
+        # filetypes=(("Tutti i File", "*.*"),("File di testo", "*.txt")),
+    )
+    semipsel = filename.split("/")
+    codice_selezionato = semipsel[2]
+    chiave_usb=apri_dati+':\\chiave_'+codice_selezionato
+
+    if os.path.exists(chiave_usb):
+        with open(chiave_usb, "r") as leggif:
+            leggi1 = int(leggif.readline())
+            leggi2 = int(leggif.readline())
+            leggi3 = int(leggif.readline())
+            chiave = leggi1**leggi2
+            prewin.destroy()  # Chiude la finestra tkinter dopo aver selezionato il file
+
+    else:
+        messagebox.showerror("Errore", "Dati su USB non trovati")
+        prewin.destroy()  # Chiude la finestra tkinter dopo aver selezionato il file
+        quit()
+
+
+prewin = tk.Tk()
+larghezza = prewin.winfo_screenwidth()
+altezza = prewin.winfo_screenheight()
+prewin.title("Seleziona BIT di Codifica")
+prewin.configure(bg="yellow")
+prewin.geometry(f"{'300'}x{'100'}+{larghezza//2}+{altezza//3}")
+
+label = tk.Label(
+    prewin, text="Seleziona BIT di Codifica", bg="yellow", font="arial 12 bold"
+)
+label.pack(pady=10)
+
+select_button = tk.Button(prewin, width=10, text="APRI", bg="green", command=apri_file)
+select_button.pack(pady=5)
+
+prewin.mainloop()
 
 
 def carica_semiprimo_random(nome_file):
@@ -64,20 +110,23 @@ def encrypt_message(message, aes_key):
 
 def elaborazione_email():
     message_to_encrypt = tw1.get("1.0", END)
-    if message_to_encrypt=='' or len(message_to_encrypt)<20:
-        messagebox.showerror('Attenzione:','Messaggio inesistente o più corto di 20 caratteri')
+    if message_to_encrypt == "" or len(message_to_encrypt) < 20:
+        messagebox.showerror(
+            "Attenzione:", "Messaggio inesistente o più corto di 20 caratteri"
+        )
         return
     # Carica un semiprimo casuale dal file
-    nome_file = "13000b"
+    nome_file = filename
     semiprime = carica_semiprimo_random(nome_file)
     # Genera chiave AES utilizzando il fattore primo
     secret_key = factorize(semiprime)
     aes_key = generate_aes_key(secret_key)
-    message_to_encrypt=message_to_encrypt.strip()
+    message_to_encrypt = message_to_encrypt.strip()
     ciphertext, nonce, tag = encrypt_message(message_to_encrypt, aes_key)
-    with open("send_mess_13000b", "wb") as file: 
+    memorizza_file='send_mess_'+codice_selezionato
+    with open(memorizza_file, "wb") as file:
         pickle.dump((ciphertext, nonce, tag, str(semiprime)), file)
-    messagebox.showinfo('Via E-mail:','Messaggio creato con successo')    
+    messagebox.showinfo("Via E-mail:", "Messaggio creato con successo")
 
 
 def elaborazione_cloud():
@@ -88,14 +137,16 @@ def elaborazione_cloud():
         )
         return
     # Carica un semiprimo casuale dal file
-    nome_file = "13000b"
+    nome_file = filename
     semiprime = carica_semiprimo_random(nome_file)
     # Genera chiave AES utilizzando il fattore primo
     secret_key = factorize(semiprime)
     aes_key = generate_aes_key(secret_key)
     message_to_encrypt = message_to_encrypt.strip()
     ciphertext, nonce, tag = encrypt_message(message_to_encrypt, aes_key)
-    with open("F:\\DCP/send_mess_13000b", "wb") as file:
+    memorizza_file = "F:\\DCP/send_mess_" + codice_selezionato
+
+    with open(memorizza_file, "wb") as file:
         pickle.dump((ciphertext, nonce, tag, str(semiprime)), file)
     messagebox.showinfo("Via Cloud:", "Messaggio creato con successo")
 
@@ -133,9 +184,12 @@ def on_enter1(event):
 def on_leave1(event):
     b2.config(bg=fondo_button)  # Ripristina il colore di sfondo
 
+
 def cancella():
-    tw1.delete('1.0',END)
+    tw1.delete("1.0", END)
     return
+
+
 # *************************************************
 # *       dimensione e colori
 # *************************************************
@@ -153,7 +207,7 @@ fondo_entry = "#C1C1C1"
 # *************************************************
 root = tk.Tk()
 root.title("Invio Documenti Criptati   IDC")
-root.geometry(finestra)
+root.geometry(finestra+'+200+50')
 root.config(bg=fondo_finestra)
 # Creazione del canvas
 px = finestra_x - 130
@@ -163,7 +217,13 @@ canvas.place(x=px, y=py)
 px = 10
 py = 10
 tw1 = tk.Text(
-    root,wrap=WORD, width=64, height=17, bg=fondo_text, font="helvetica, 12", cursor="left_ptr"
+    root,
+    wrap=WORD,
+    width=64,
+    height=17,
+    bg=fondo_text,
+    font="helvetica, 12",
+    cursor="left_ptr",
 )
 tw1.place(x=px, y=py)
 
@@ -209,7 +269,7 @@ b3 = tk.Button(
     width=13,
     cursor="hand2",
     command=elaborazione_email,
-    state='disabled',
+    state="disabled",
 )
 b3.place(x=px, y=py)
 
@@ -228,13 +288,13 @@ b4.place(x=px, y=py)
 
 py = py + 3
 px = px + 150
-e2 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry,justify='center')
-e2.insert(0,'Cartella cloud su PC')
+e2 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry, justify="center")
+e2.insert(0, "Cartella cloud su PC")
 e2.place(x=px, y=py)
 
 py = py + -50
-e3 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry,justify='center')
-e3.insert(0,'Non Disponibile')
+e3 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry, justify="center")
+e3.insert(0, "Non Disponibile")
 e3.place(x=px, y=py)
 
 # Carica l'immagine automaticamente quando la finestra si apre
