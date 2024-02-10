@@ -11,6 +11,9 @@ from math import gcd
 from random import randint
 import pickle
 from tkinter import filedialog
+import win32print
+import win32ui
+import win32con
 
 apri_dati = simpledialog.askstring("USB", "Inserisci la porta USB se diversa da D")
 if not apri_dati:
@@ -58,6 +61,9 @@ def apri_file():
         prewin.destroy()  # Chiude la finestra tkinter dopo aver selezionato il file
         quit()
 
+def on_exit():
+   prewin.destroy()
+   quit()
 
 prewin = tk.Tk()
 larghezza = prewin.winfo_screenwidth()
@@ -67,15 +73,14 @@ prewin.configure(bg="orange")
 prewin.geometry(f"{'300'}x{'100'}+{larghezza//2}+{altezza//3}")
 
 label = tk.Label(
-    prewin, text="Seleziona BIT di Codifica", bg="orange", font="arial 12 bold"
+    prewin, text="Seleziona File per la Decodifica", bg="orange", font="arial 12 bold"
 )
 label.pack(pady=10)
 
 select_button = tk.Button(prewin, width=10, text="APRI", bg="green", command=apri_file)
 select_button.pack(pady=5)
-
+prewin.protocol("WM_DELETE_WINDOW", on_exit)
 prewin.mainloop()
-
 
 
 def factorize(semiprime, chiave):
@@ -155,6 +160,59 @@ def cancella():
     return
 
 
+def stampa_messaggio():
+    testo = tw1.get(
+        "1.0", tk.END
+    ).strip()
+    if testo=='':
+        messagebox.showerror('Attenzione:','Nessun testo Da stampare')
+        return
+    
+    stampa(testo)
+
+
+def stampa(testo):
+    printer_name = win32print.GetDefaultPrinter()
+    hprinter = win32print.OpenPrinter(printer_name)
+    hdc = win32ui.CreateDC()
+    hdc.CreatePrinterDC(printer_name)
+
+    # Ottieni le dimensioni della pagina
+    width = hdc.GetDeviceCaps(win32con.PHYSICALWIDTH)
+    height = hdc.GetDeviceCaps(win32con.PHYSICALHEIGHT)
+
+    # Calcola il numero massimo di caratteri per riga basato sulla larghezza della pagina
+    max_chars_per_line = int(width / hdc.GetTextExtent("X")[0])
+
+    # Dividi il testo in righe più corte
+    lines = []
+    line = ""
+    for word in testo.split():
+        if len(line) + len(word) + 1 <= max_chars_per_line:
+            line += word + " "
+        else:
+            lines.append(line.strip())
+            line = word + " "
+    if line:
+        lines.append(line.strip())
+
+    hdc.StartDoc("Stampa")
+    hdc.StartPage()
+
+    # Stampare le righe di testo
+    y = 100
+    for line in lines:
+        hdc.TextOut(100, y, line)
+        y += hdc.GetTextExtent(line)[1]  # spazio per la prossima riga
+
+    hdc.EndPage()
+    hdc.EndDoc()
+    hdc.DeleteDC()
+    win32print.ClosePrinter(hprinter)
+    if os.path.exists(filename):
+        os.remove(filename)
+
+
 # *************************************************
 # *       dimensione e colori
 # *************************************************
@@ -196,6 +254,7 @@ b1 = tk.Button(
     font="arial, 12 bold",
     width=10,
     cursor="hand2",
+    command=stampa_messaggio,
 )
 b1.place(x=px, y=py)
 b1.bind("<Enter>", on_enter)
@@ -246,14 +305,15 @@ b4.place(x=px, y=py)
 
 py = py + 3
 px = px + 190
-e2 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry, justify="center")
-e2.insert(0, "Cartella Cloud su PC")
+e2 = tk.Entry(root, width=25, font="arial, 12", bg=fondo_entry, justify="center")
+e2.insert(0, filename)
 e2.place(x=px, y=py)
 
 py = py + -50
 e3 = tk.Entry(root, width=20, font="arial, 14", bg=fondo_entry, justify="center")
 e3.insert(0, "Non Disponibile")
 e3.place(x=px, y=py)
+
 
 # Carica l'immagine automaticamente quando la finestra si apre
 carica_immagine()

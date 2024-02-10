@@ -11,6 +11,9 @@ from Crypto.Hash import SHA256
 from math import gcd
 from random import randint
 import pickle
+import win32print
+import win32ui
+import win32con
 
 
 apri_dati = simpledialog.askstring("USB", "Inserisci la porta USB se diversa da D")
@@ -190,6 +193,54 @@ def cancella():
     return
 
 
+def stampa_messaggio():
+    testo = tw1.get("1.0", tk.END).strip()
+    if testo == "":
+        messagebox.showerror("Attenzione:", "Nessun testo Da stampare")
+        return
+    stampa(testo)
+
+
+def stampa(testo):
+    printer_name = win32print.GetDefaultPrinter()
+    hprinter = win32print.OpenPrinter(printer_name)
+    hdc = win32ui.CreateDC()
+    hdc.CreatePrinterDC(printer_name)
+
+    # Ottieni le dimensioni della pagina
+    width = hdc.GetDeviceCaps(win32con.PHYSICALWIDTH)
+    height = hdc.GetDeviceCaps(win32con.PHYSICALHEIGHT)
+
+    # Calcola il numero massimo di caratteri per riga basato sulla larghezza della pagina
+    max_chars_per_line = int(width / hdc.GetTextExtent("X")[0])
+
+    # Dividi il testo in righe più corte
+    lines = []
+    line = ""
+    for word in testo.split():
+        if len(line) + len(word) + 1 <= max_chars_per_line:
+            line += word + " "
+        else:
+            lines.append(line.strip())
+            line = word + " "
+    if line:
+        lines.append(line.strip())
+
+    hdc.StartDoc("Stampa")
+    hdc.StartPage()
+
+    # Stampare le righe di testo
+    y = 100
+    for line in lines:
+        hdc.TextOut(100, y, line)
+        y += hdc.GetTextExtent(line)[1]  # spazio per la prossima riga
+
+    hdc.EndPage()
+    hdc.EndDoc()
+    hdc.DeleteDC()
+    win32print.ClosePrinter(hprinter)
+
+
 # *************************************************
 # *       dimensione e colori
 # *************************************************
@@ -237,6 +288,7 @@ b1 = tk.Button(
     font="arial, 12 bold",
     width=10,
     cursor="hand2",
+    command=stampa_messaggio
 )
 b1.place(x=px, y=py)
 b1.bind("<Enter>", on_enter)
