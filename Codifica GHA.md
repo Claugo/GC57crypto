@@ -1,7 +1,7 @@
 Codifica Ibrida
 La codifica ibrida comprende 3 algoritmi, GC57, HSA, AES.
 Per tenere la fattorizzazione a tempo zero per il GC57 ho pensato di creare dei file contenenti i una quantità finita di semiprimi divisi per bit. Questo perché creare un semiprimo significa trovare due fattori primi di una certa dimensione e questo comporta un tempo che può superare i due minuti. 
-Per esempio, questo file 13076b contiene 10 semiprimi da 13076 bit il che vuol dire fattori primi che vanno da 6000 bit a 7000 bit. Naturalmente posso inserire in questo file quanti semiprimi voglio, che siano 10 o un miliardo è uguale, l'unica cosa che cambia è il tempo per crearlo che potrebbe superare anche il giorno di lavoro. 
+Per esempio, questo file 13076b contiene 10 semiprimi da 13076 bit il che vuol dire fattori primi che vanno da 6000 bit a 7000 bit. Naturalmente posso inserire in questo file quanti semiprimi voglio, che siano 10 o 1000 è uguale, l'unica cosa che cambia è il tempo per crearlo che potrebbe superare anche il giorno di lavoro. 
 Creato il file non mi devo più preoccupare del tempo per codificare e decodificare il messaggio.
 Qui riporto alcuni esempi di file creati: 12072b, 10068b, 8379b
 
