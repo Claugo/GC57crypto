@@ -57,7 +57,7 @@ def get_password_from_user():
 
 
 # Esempio di utilizzo
-password = "Cla1Giu19"
+password = "12345"
 hashed_password = hash_password(password)
 
 # Verifica della password
