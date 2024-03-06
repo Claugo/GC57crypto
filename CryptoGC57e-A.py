@@ -1,5 +1,5 @@
+# codifica GC57 estesa
 import tkinter as tk
-#from tkinter import *
 from PIL import Image, ImageTk
 from tkinter import simpledialog
 from tkinter import filedialog
@@ -14,13 +14,9 @@ import win32print
 import win32ui
 import win32con
 
-filename=''
+filename = ""
 programma_invia_a = "c:\\mega/cartella_a"
 programma_riceve_a = "c:\\mega/cartella_b"
-
-
-T = int(time.time())
-seed(T)
 
 # *******************************************************
 # * Inserimento passwors
@@ -77,7 +73,6 @@ else:
 # * Controllo porta USB
 # *******************************************************
 
-
 apri_dati = simpledialog.askstring("USB", "Inserisci la porta USB se diversa da D")
 if apri_dati == None:
     quit()
@@ -97,10 +92,12 @@ else:
         "Attenzione", "Chiavetta USB non trovata nella lettera di unità " + apri_dati
     )
     quit()
+
+
 # *******************************************************
 # * decripta file ricevuto
 # *******************************************************
-def decripta(lista_m,lista_testo,p):
+def decripta(lista_dec5, p):
 
     start1 = str(p)
     start2 = len(start1)
@@ -118,37 +115,19 @@ def decripta(lista_m,lista_testo,p):
         c2 = int(ln[i + 1])
         c3 = c1 * 10 + c2
         divln.append(c3)
-    # **********************************************
-    m1 = int(lista_m[0])
-    m2 = int(lista_m[1])
-    m3 = int(lista_m[2])
-    m4 = int(lista_m[3])
-    m5 = int(lista_m[4])
-    # **********************************************
 
     cont = start
     tdecript = ""
-    for i in range(len(lista_testo)):
+    for i in range(len(lista_dec5)):
         if cont == len(divln):
             cont = 0
         x = int(divln[cont])
-        if x >= 0 and x < 25:
-            y = int(lista_testo[i])
-            tdecript = tdecript + (chr(y - x - m1))
-        if x >= 25 and x < 40:
-            y = int(lista_testo[i])
-            tdecript = tdecript + (chr(y - x - m2))
-        if x >= 40 and x < 50:
-            y = int(lista_testo[i])
-            tdecript = tdecript + (chr(y - x - m3))
-        if x >= 50 and x < 75:
-            y = int(lista_testo[i])
-            tdecript = tdecript + (chr(y - x - m4))
-        if x >= 75 and x < 100:
-            y = int(lista_testo[i])
-            tdecript = tdecript + (chr(y - x - m5))
-        cont = cont + 1
-    return tdecript
+        seed(x)
+        m1=randint(10000,30000)
+        y = int(lista_dec5[i])
+        tdecript = tdecript + chr(y - x - m1)
+        cont=cont+1
+    return(tdecript)
 
 
 # *******************************************************
@@ -211,7 +190,7 @@ def apri_filer():
     # *controllo quanti pacchetti di 3 riesco a estrarre dal fattore primo q
     lista_q = list(str(q))
 
-    n_round = ((len(lista_q) - 100)) // 3 * 3
+    n_round = ((len(lista_q) - 100)) // 5 * 5
 
     # *creo due punti di partenza differenti
     start1 = str(q)
@@ -222,28 +201,44 @@ def apri_filer():
     div_round1 = []
     div_round2 = []
 
-    for ii in range(c_round1, c_round1 + n_round, 3):
-        div_round1.append((lista_q[ii] + lista_q[ii + 1] + lista_q[ii + 2]))
+    for ii in range(c_round1, c_round1 + n_round, 5):
+        div_round1.append(
+            (
+                lista_q[ii]
+                + lista_q[ii + 1]
+                + lista_q[ii + 2]
+                + lista_q[ii + 3]
+                + lista_q[ii + 4]
+            )
+        )
 
-    for ii in range(c_round2, c_round2 + n_round, 3):
-        div_round2.append((lista_q[ii] + lista_q[ii + 1] + lista_q[ii + 2]))
+    for ii in range(c_round2, c_round2 + n_round, 5):
+        div_round2.append(
+            (
+                lista_q[ii]
+                + lista_q[ii + 1]
+                + lista_q[ii + 2]
+                + lista_q[ii + 3]
+                + lista_q[ii + 4]
+            )
+        )
 
     # ************************************************************
     chiave_xor = ""
     chiave_bin1 = ""
     for i in range(len(div_round1)):
         num_int = int(div_round1[i])
-        bin1 = bin(num_int)[2:].zfill(11)
+        bin1 = bin(num_int)[2:].zfill(17)
 
         chiave_bin1 = chiave_bin1 + chr(int(bin1, 2))
 
         num_int = int(div_round2[i])
-        bin2 = bin(num_int)[2:].zfill(11)
+        bin2 = bin(num_int)[2:].zfill(17)
 
         int_bin1 = int(bin1, 2)
         int_bin2 = int(bin2, 2)
         bin_x = int_bin1 ^ int_bin2
-        xor_bin = bin(bin_x)[2:].zfill(11)
+        xor_bin = bin(bin_x)[2:].zfill(17)
         chiave_xor = chiave_xor + chr(int(xor_bin, 2))
     c_xor = list(chiave_xor)
     ii = 0
@@ -256,23 +251,27 @@ def apri_filer():
         codifica1 = int(p_asci)
         codifica2 = int(p_asci2)
         crea_codifica = codifica1 ^ codifica2
-        xor_testo = bin(crea_codifica)[2:].zfill(11)
+        xor_testo = bin(crea_codifica)[2:].zfill(17)
         testo_decriptato = testo_decriptato + str(int(xor_testo, 2))
         ii += 1
     lista_dec = list(testo_decriptato)
-    lista_dec3 = []
-    for i in range(0, len(lista_dec), 3):
-        lista_dec3.append(lista_dec[i] + lista_dec[i + 1] + lista_dec[i + 2])
-    lista_testo = lista_dec3[:-5]
-    lista_m = lista_dec3[-5:]
-    tdec = decripta(lista_m,lista_testo,p)
-    tw2.delete('1.0',tk.END)
-    tw2.insert('1.0',tdec)
+    lista_dec5 = []
+    for i in range(0, len(lista_dec), 5):
+        lista_dec5.append(
+            lista_dec[i]
+            + lista_dec[i + 1]
+            + lista_dec[i + 2]
+            + lista_dec[i + 3]
+            + lista_dec[i + 4]
+        )    
+    tdec = decripta(lista_dec5, p)
+    tw2.delete("1.0", tk.END)
+    tw2.insert("1.0", tdec)
+
 
 # *******************************************************
 # * Apre file semiprimi scelta tipo di codifica
 # *******************************************************
-
 def apri_file():
     global codice_selezionato, chiave, filename
     filename = filedialog.askopenfilename(
@@ -282,9 +281,7 @@ def apri_file():
     )
 
     if filename == "":
-        messagebox.showwarning(
-        "Attenzione", "Nessuna codifica selezionata" + apri_dati
-        )
+        messagebox.showwarning("Attenzione", "Nessuna codifica selezionata" + apri_dati)
 
         return
     semipsel = filename.split("/")
@@ -302,14 +299,16 @@ def apri_file():
         messagebox.showerror("Errore", "Dati su USB non trovati")
         return
 
+
 # *******************************************************
 # * cripta file di testo con scostamento GC57
 # *******************************************************
 
+
 def cripta(p):
     global start
-    f1 = tw1.get('1.0',tk.END)
-    f1=f1.strip()
+    f1 = tw1.get("1.0", tk.END)
+    f1 = f1.strip()
 
     start1 = str(p)
     start2 = len(start1)
@@ -328,13 +327,6 @@ def cripta(p):
         c3 = c1 * 10 + c2
         divln.append(c3)
     # **********************************************
-    m1 = randint(100, 400)
-    m2 = randint(100, 400)
-    m3 = randint(100, 400)
-    m4 = randint(100, 400)
-    m5 = randint(100, 400)
-    # **********************************************
-
     text = f1
     te = list(text)
     cont = start
@@ -345,73 +337,71 @@ def cripta(p):
     for i in range(len(text)):
         if cont == len(divln):
             cont = 0
-        if ord(te[i]) > 700:
+        if ord(te[i]) > 70000:
             pass
         else:
             x = int(divln[cont])
-            if x >= 0 and x < 25:
-                x = x + m1 + ord(te[i])
-            if x >= 25 and x < 40:
-                x = x + m2 + ord(te[i])
-            if x >= 40 and x < 50:
-                x = x + m3 + ord(te[i])
-            if x >= 50 and x < 75:
-                x = x + m4 + ord(te[i])
-            if x >= 75 and x < 100:
-                x = x + m5 + ord(te[i])
-            tcript = tcript + str(x)
-            cont = cont + 1
-    tcript = tcript + str(m1)
-    tcript = tcript + str(m2)
-    tcript = tcript + str(m3)
-    tcript = tcript + str(m4)
-    tcript = tcript + str(m5)
-    return tcript
+            seed(x)
+            m1=randint(10000,30000)
+            x = x + m1 + ord(te[i])
+            tcript=tcript+str(x)
+            cont=cont+1
+    return(tcript)
+
 
 # *******************************************************
-# * Mescola la criptazione con XOR
+# * Chiama lo scostamento e mescola la criptazione con XOR
 # *******************************************************
 
 def codifica():
-    if filename=='':
-        messagebox.showerror('Attenzione','Non è stata selezionata nessuna codifica')
+    if filename == "":
+        messagebox.showerror("Attenzione", "Non è stata selezionata nessuna codifica")
         return
-    testo=tw1.get('1.0',tk.END)
-    if testo=='' or len(testo)<12:
+    testo = tw1.get("1.0", tk.END)
+    if testo == "" or len(testo) < 12:
         messagebox.showerror("Attenzione", "Messaggio mancante o Troppo corto")
         return
+
+    T = int(time.time())
+    seed(T)
 
     with open(filename, "r") as file:
         righe = file.readlines()
         codice_random = randint(0, len(righe) - 1)  # Genera un indice casuale
         n = righe[codice_random]
-        n=int(n.strip())
+        n = int(n.strip())
         a = n % chiave
         b = n - a
         for i in range(10):
             r = gcd(a, b)
             if r != 1:
-                p=r
-                q=n//p
+                p = r
+                q = n // p
                 break
             a = a + chiave
             b = b - chiave
         if r == 1:
-            messagebox.showerror('Attenzione','Codifica non Superata')
+            messagebox.showerror("Attenzione", "Codifica non Superata")
             return
 
-        testo_cript=cripta(p)
+        testo_cript = cripta(p)
 
         lista_tc = list(testo_cript)
         lista_tc3 = []
 
-        for i in range(0, len(lista_tc), 3):
-            lista_tc3.append(lista_tc[i] + lista_tc[i + 1] + lista_tc[i + 2])
+        for i in range(0, len(lista_tc), 5):
+            lista_tc3.append(
+                lista_tc[i]
+                + lista_tc[i + 1]
+                + lista_tc[i + 2]
+                + lista_tc[i + 3]
+                + lista_tc[i + 4]
+            )
 
         # *controllo quanti pacchetti di 3 riesco a estrarre dal fattore primo q
         lista_q = list(str(q))
 
-        n_round = ((len(lista_q) - 100)) // 3 * 3
+        n_round = ((len(lista_q) - 100)) // 5 * 5
 
         # *creo due punti di partenza differenti
         start1 = str(q)
@@ -419,15 +409,31 @@ def codifica():
         c_round1 = int(start1[start2 - 9] + start1[start2 - 3])
         c_round2 = int(start1[start2 - 7] + start1[start2 - 4])
 
-        # *creo due liste contenenti un numero divisibile per 3
+        # *creo due liste contenenti un numero divisibile per 5
         div_round1 = []
         div_round2 = []
 
-        for ii in range(c_round1, c_round1 + n_round, 3):
-            div_round1.append((lista_q[ii] + lista_q[ii + 1] + lista_q[ii + 2]))
+        for ii in range(c_round1, c_round1 + n_round, 5):
+            div_round1.append(
+                (
+                    lista_q[ii]
+                    + lista_q[ii + 1]
+                    + lista_q[ii + 2]
+                    + lista_q[ii + 3]
+                    + lista_q[ii + 4]
+                )
+            )
 
-        for ii in range(c_round2, c_round2 + n_round, 3):
-            div_round2.append((lista_q[ii] + lista_q[ii + 1] + lista_q[ii + 2]))
+        for ii in range(c_round2, c_round2 + n_round, 5):
+            div_round2.append(
+                (
+                    lista_q[ii]
+                    + lista_q[ii + 1]
+                    + lista_q[ii + 2]
+                    + lista_q[ii + 3]
+                    + lista_q[ii + 4]
+                )
+            )
 
         # ************************************************************
         chiave_xor = ""
@@ -435,17 +441,17 @@ def codifica():
 
         for i in range(len(div_round1)):
             num_int = int(div_round1[i])
-            bin1 = bin(num_int)[2:].zfill(11)
+            bin1 = bin(num_int)[2:].zfill(17)
 
             chiave_bin1 = chiave_bin1 + chr(int(bin1, 2))
 
             num_int = int(div_round2[i])
-            bin2 = bin(num_int)[2:].zfill(11)
+            bin2 = bin(num_int)[2:].zfill(17)
 
             int_bin1 = int(bin1, 2)
             int_bin2 = int(bin2, 2)
             bin_x = int_bin1 ^ int_bin2
-            xor_bin = bin(bin_x)[2:].zfill(11)
+            xor_bin = bin(bin_x)[2:].zfill(17)
             chiave_xor = chiave_xor + chr(int(xor_bin, 2))
 
         c_xor = list(chiave_xor)
@@ -458,14 +464,16 @@ def codifica():
             codifica1 = p_asci
             codifica2 = int(lista_tc3[i])
             crea_codifica = codifica1 ^ codifica2
-            xor_testo = bin(crea_codifica)[2:].zfill(11)
+            xor_testo = bin(crea_codifica)[2:].zfill(17)
             testo_criptato = testo_criptato + chr(int(xor_testo, 2))
             ii += 1
 
         dati_da_salvare = {"testo_criptato": testo_criptato, "semiprimo": n}
 
         # Salva i dati in un file binario usando pickle
-        with open(programma_invia_a + "/GC57_mess_" + l1.cget('text'), "wb") as file_binario:
+        with open(
+            programma_invia_a + "/GC57_mess_" + l1.cget("text"), "wb"
+        ) as file_binario:
             pickle.dump(dati_da_salvare, file_binario)
 
         messagebox.showinfo("Salvataggio", "File Codificato Creato")
@@ -474,8 +482,6 @@ def codifica():
 # *******************************************************
 # * stampa messaggio su stampante di default
 # *******************************************************
-
-
 def stampa_messaggiotw2():
     testo = tw2.get("1.0", tk.END).strip()
     if testo == "":
@@ -542,9 +548,11 @@ def stampa(testo):
 # * parte Grafica gestione pulsanti
 # *******************************************************
 
+
 def cancellatw1():
     tw1.delete("1.0", tk.END)
     return
+
 
 def cancellatw2():
     tw2.delete("1.0", tk.END)
@@ -597,7 +605,7 @@ def on_leave3(event):
 finestra_x = 945
 finestra_y = 500
 finestra = str(finestra_x) + "x" + str(finestra_y)
-fondo_finestra = "#36648B"
+fondo_finestra = "#006400"
 fondo_text = "#808080"
 fondo_button = "#20B2AA"
 passa_button = "#C0FF3E"
@@ -607,7 +615,7 @@ fondo_entry = "#C1C1C1"
 # *        Finestra principale
 # *************************************************
 root = tk.Tk()
-root.title("Codifica Con Metodo GC57 - PROGRAMMA A")
+root.title("Codifica Con Metodo GC57-E - PROGRAMMA A")
 root.geometry(finestra)
 root.config(bg=fondo_finestra)
 # Creazione del canvas
@@ -637,7 +645,7 @@ b1 = tk.Button(
     font="arial, 12 bold",
     width=10,
     cursor="hand2",
-    command=stampa_messaggiotw1
+    command=stampa_messaggiotw1,
 )
 b1.place(x=px, y=py)
 b1.bind("<Enter>", on_enter)
@@ -653,7 +661,7 @@ b2 = tk.Button(
     font="arial, 12 bold",
     width=10,
     cursor="hand2",
-    command=cancellatw1
+    command=cancellatw1,
 )
 b2.place(x=px, y=py)
 b2.bind("<Enter>", on_enter1)
@@ -669,7 +677,7 @@ b3 = tk.Button(
     font="arial, 12 bold",
     width=15,
     cursor="hand2",
-    command=apri_file
+    command=apri_file,
 )
 b3.place(x=px, y=py)
 
@@ -682,14 +690,14 @@ b4 = tk.Button(
     font="arial, 12 bold",
     width=15,
     cursor="hand2",
-    command=codifica
+    command=codifica,
 )
 b4.place(x=px, y=py)
 
 px = px + 180
-py=py-50
+py = py - 50
 
-l1 = tk.Label(text='',width=10, bg=fondo_finestra, font="arial 14 bold")
+l1 = tk.Label(text="", width=10, bg=fondo_finestra, font="arial 14 bold")
 l1.place(x=px, y=py)
 
 # ****************************************************
@@ -703,7 +711,7 @@ tw2 = tk.Text(
 )
 tw2.place(x=px, y=py)
 
-px = px+100
+px = px + 100
 py = 330
 
 rb1 = tk.Button(
@@ -713,7 +721,7 @@ rb1 = tk.Button(
     font="arial, 12 bold",
     width=10,
     cursor="hand2",
-    command=stampa_messaggiotw2
+    command=stampa_messaggiotw2,
 )
 rb1.place(x=px, y=py)
 rb1.bind("<Enter>", on_enter2)
@@ -735,7 +743,7 @@ rb2.place(x=px, y=py)
 rb2.bind("<Enter>", on_enter3)
 rb2.bind("<Leave>", on_leave3)
 
-px = px-240
+px = px - 240
 py = 330 + 70
 
 b3 = tk.Button(
@@ -757,13 +765,13 @@ l2.place(x=px, y=py)
 
 # Carica l'immagine automaticamente quando la finestra si apre
 
-testo = "CODIFICA\nGC57"
+testo = "CODIFICA\nGC57-E"
 colore = "blue"  # Colore del testo
 fonte = ("arial", 10, "bold")
 colore_sfondo = fondo_finestra  # Colore dello sfondo
 canvas.config(bg=colore_sfondo)
-canvas.create_text(65,20,text='GC57crypto',fill='red',font=fonte)
-canvas.create_text(65, 50, text="A", fill="red", font='arial 20 bold')
+canvas.create_text(65, 20, text="GC57crypto", fill="red", font=fonte)
+canvas.create_text(65, 50, text="A", fill="red", font="arial 20 bold")
 canvas.create_text(65, 85, text=testo, fill=colore, font=fonte)
 
 

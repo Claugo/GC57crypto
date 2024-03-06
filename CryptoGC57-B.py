@@ -15,8 +15,8 @@ import win32ui
 import win32con
 
 filename=''
-programma_invia_a = "c:\\mega/cartella_a"
-programma_riceve_a = "c:\\mega/cartella_b"
+programma_invia_a = "c:\\mega/cartella_b"
+programma_riceve_a = "c:\\mega/cartella_a"
 
 
 T = int(time.time())
@@ -25,7 +25,6 @@ seed(T)
 # *******************************************************
 # * Inserimento passwors
 # *******************************************************
-
 
 def hash_password(password):
     # Genera un salt casuale per aggiungere casualità all'hashing
@@ -77,9 +76,8 @@ else:
 # * Controllo porta USB
 # *******************************************************
 
-
 apri_dati = simpledialog.askstring("USB", "Inserisci la porta USB se diversa da D")
-if apri_dati == None:
+if apri_dati==None:
     quit()
 
 if not apri_dati:
@@ -597,7 +595,7 @@ def on_leave3(event):
 finestra_x = 945
 finestra_y = 500
 finestra = str(finestra_x) + "x" + str(finestra_y)
-fondo_finestra = "#36648B"
+fondo_finestra = "#9AC0CD"
 fondo_text = "#808080"
 fondo_button = "#20B2AA"
 passa_button = "#C0FF3E"
@@ -607,7 +605,7 @@ fondo_entry = "#C1C1C1"
 # *        Finestra principale
 # *************************************************
 root = tk.Tk()
-root.title("Codifica Con Metodo GC57 - PROGRAMMA A")
+root.title("Codifica Con Metodo GC57 - PROGRAMMA B")
 root.geometry(finestra)
 root.config(bg=fondo_finestra)
 # Creazione del canvas
@@ -754,16 +752,13 @@ px = px + 160
 l2 = tk.Label(text="", width=12, bg=fondo_finestra, font="arial 14 bold")
 l2.place(x=px, y=py)
 
-
-# Carica l'immagine automaticamente quando la finestra si apre
-
 testo = "CODIFICA\nGC57"
 colore = "blue"  # Colore del testo
 fonte = ("arial", 10, "bold")
 colore_sfondo = fondo_finestra  # Colore dello sfondo
 canvas.config(bg=colore_sfondo)
-canvas.create_text(65,20,text='GC57crypto',fill='red',font=fonte)
-canvas.create_text(65, 50, text="A", fill="red", font='arial 20 bold')
+canvas.create_text(65, 20, text="GC57crypto", fill="red", font=fonte)
+canvas.create_text(65, 50, text="B", fill="red", font="arial 20 bold")
 canvas.create_text(65, 85, text=testo, fill=colore, font=fonte)
 
 
