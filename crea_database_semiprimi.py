@@ -3,13 +3,12 @@ from PIL import Image, ImageTk
 import os
 from tkinter import simpledialog
 from tkinter import messagebox
-from sympy import isprime, nextprime
-from math import isqrt, sqrt
+from sympy import nextprime
 from random import randint, seed
 import time
 
 T = int(time.time())
-seed = T
+seed(T)
 
 
 apri_dati = simpledialog.askstring("USB", "Inserisci la porta USB se diversa da D")
