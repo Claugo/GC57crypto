@@ -4,4 +4,8 @@ e rimandare. Il programma può essere usato per mandare solo messaggi o messaggi
 un allegato e di che tipo di allegato si tratta. 
 Naturalmente il programma, come gli altri inseriti di questa serie, funzionano ma dobbiamo creare i file di semiprimi, per selezionare le codifiche, e i file su USB
 delle chiavi per poter accedere ai semiprimi e scomporli nei suoi due fattori primi.
-Inoltre bisogna adattare gli indirizzi delle cartelle nelle quali verranno depositati i messaggi da condividere, tramite cloud, con il nostro contato, o contatti.
+In questa versione ho attivato un file GC57cfg per la gestione delle cartelle che utilizza il programma:
+Quando il programma parte per la prima volta si apre questa finestra CFG dove chiede di inserire l'indirizzo delle varie cartelle.
+Le cartelle devono già essere state create perchè il programma non le crea ma effettua una verifica se queste cartelle che vengono inseriti sono esistenti.
+Rimane il fatto che dentro la cartella SEMIPRIMI devono essere inseriti i file utilizzando il programma crea semiprimi. 
+Questo CFG agevola solo il fatto che se utilizzate un altro drive al posto di C:\, qui lo potete impostare correttamente
